@@ -8,6 +8,7 @@ endif (COMMAND CMAKE_POLICY)
 # project setup
 
 project (MiniTAO)
+add_definitions (-DTIXML_USE_STL)
 include_directories (tao)
 include (CheckIncludeFileCXX)
 
@@ -121,3 +122,5 @@ install (DIRECTORY tao/tao/
   FILES_MATCHING PATTERN "*.inl")
 
 install (TARGETS minitao DESTINATION lib)
+
+subdirs (tixml261 tests)

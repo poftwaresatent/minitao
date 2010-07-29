@@ -32,7 +32,7 @@
 #define MINITAO_MODEL_HPP
 
 #include "State.hpp"
-#include <Eigen/Geometry>
+#include "wrap_eigen.hpp"
 #include <string>
 #include <vector>
 #include <set>
@@ -42,12 +42,6 @@
 class taoDNode;
 
 namespace minitao {
-
-  typedef Eigen::Transform3d Transform;
-  typedef Eigen::Translation3d Translation;
-  typedef Eigen::Quaternion<double> Quaternion;
-  typedef Eigen::VectorXd Vector;
-  typedef Eigen::MatrixXd Matrix;
   
   
   // declared in <minitao/tao_util.hpp>
