@@ -31,7 +31,7 @@
 #ifndef MINITAO_MODEL_HPP
 #define MINITAO_MODEL_HPP
 
-#include <minitao/State.hpp>
+#include "State.hpp"
 #include <Eigen/Geometry>
 #include <string>
 #include <vector>

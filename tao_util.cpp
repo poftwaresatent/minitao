@@ -24,10 +24,10 @@
  */
 
 #include "tao_util.hpp"
+#include "strutil.hpp"
 #include <tao/dynamics/taoNode.h>
 #include <tao/dynamics/taoDNode.h>
 #include <tao/dynamics/taoJoint.h>
-#include <wbcnet/strutil.hpp>
 
 
 namespace minitao {
@@ -38,7 +38,7 @@ namespace minitao {
   {
     deInt id = node->getID();
     if (idToNodeMap.find( id ) != idToNodeMap.end())
-      throw std::runtime_error("minitao::mapNodesToIDs(): duplicate ID " + sfl::to_string(id));
+      throw std::runtime_error("minitao::mapNodesToIDs(): duplicate ID " + to_string(id));
     idToNodeMap.insert(std::make_pair(id, node));
     
     // recurse
