@@ -86,6 +86,10 @@ TEST (jspaceModel, branching)
     EXPECT_EQ (model->getNNodes(), 6) << "Puma should have 6 nodes";
     EXPECT_EQ (model->getNJoints(), 6) << "Puma should have 6 joints";
     EXPECT_EQ (model->getNDOF(), 6) << "Puma should have 6 DOF";
+    for (int ii(0); ii < 6; ++ii) {
+      EXPECT_NE ((void*)0, model->findNodeByID(ii))
+	<< "Could not get node " << ii;
+    }
   }
   catch (std::exception const & ee) {
     ADD_FAILURE () << "exception " << ee.what();
