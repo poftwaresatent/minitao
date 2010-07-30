@@ -34,7 +34,12 @@ endif (COVERAGE)
 if (NOT EIGEN2_DIR)
   set (EIGEN2_DIR $ENV{EIGEN2_DIR})
 endif (NOT EIGEN2_DIR)
+if (NOT EIGEN2_DIR)
+  # If we are building within busylizzy...
+  set (EIGEN2_DIR ${EIGEN_ROOT_DIR})
+endif (NOT EIGEN2_DIR)
 if (EIGEN2_DIR)
+	message ("using EIGEN2_DIR ${EIGEN2_DIR}")
   list (APPEND CMAKE_REQUIRED_INCLUDES
     ${EIGEN2_DIR}/include ${EIGEN2_DIR}
     ${EIGEN2_DIR}/include/eigen2 ${EIGEN2_DIR}/eigen2)
@@ -47,12 +52,13 @@ else (EIGEN2_DIR)
   list (APPEND CMAKE_REQUIRED_INCLUDES /usr/include/eigen2 /opt/local/include/eigen2)
   include_directories (/usr/include/eigen2 /opt/local/include/eigen2)
 endif (EIGEN2_DIR)
-check_include_file_cxx (Eigen/Core HAVE_EIGEN2)
-if (${HAVE_EIGEN2})
-  message ("found eigen2")
-else (${HAVE_EIGEN2})
-  message (FATAL_ERROR "eigen2 not found. Please install it e.g. using `sudo apt-get install libeigen2-dev' or from http://eigen.tuxfamily.org/ and tell me where to find it by passing the -DEIGEN2_DIR:path=/path/to/eigen2")
-endif (${HAVE_EIGEN2})
+### Would like to check these but CMake seems broken yet again.
+#check_include_file_cxx (Eigen/Core HAVE_EIGEN2)
+#if (${HAVE_EIGEN2})
+#  message ("found eigen2")
+#else (${HAVE_EIGEN2})
+#  message (FATAL_ERROR "eigen2 not found. Please install it e.g. using `sudo apt-get install libeigen2-dev' or from http://eigen.tuxfamily.org/ and tell me where to find it by passing the -DEIGEN2_DIR:path=/path/to/eigen2")
+#endif (${HAVE_EIGEN2})
 
 ##################################################
 # the minitao library
