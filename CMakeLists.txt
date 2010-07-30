@@ -72,10 +72,10 @@ if (EIGEN2_DIR)
     ${EIGEN2_DIR}/include ${EIGEN2_DIR}
     ${EIGEN2_DIR}/include/eigen2 ${EIGEN2_DIR}/eigen2)
 else (EIGEN2_DIR)
-  # This is the standard install location under Debian, maybe others
-  # as well. See not on quick hack above.
-  list (APPEND CMAKE_REQUIRED_INCLUDES /usr/include/eigen2)
-  include_directories (/usr/include/eigen2)
+  # Add standard install location under Debian (and others) and Macports.
+  # See not on quick hack above.
+  list (APPEND CMAKE_REQUIRED_INCLUDES /usr/include/eigen2 /opt/local/include/eigen2)
+  include_directories (/usr/include/eigen2 /opt/local/include/eigen2)
 endif (EIGEN2_DIR)
 check_include_file_cxx (Eigen/Core HAVE_EIGEN2)
 if (${HAVE_EIGEN2})

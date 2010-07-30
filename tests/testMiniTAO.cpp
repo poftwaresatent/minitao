@@ -38,8 +38,8 @@
 #include <gtest/gtest.h>
 #include <errno.h>
 
-#include <eigen2/Eigen/SVD>
-#include <eigen2/Eigen/LU>
+#include <Eigen/SVD>
+#include <Eigen/LU>
 
 using namespace std;
 using namespace minitao::test;
