@@ -32,32 +32,27 @@
 #define MINITAO_MODEL_HPP
 
 #include "State.hpp"
+#include "tao_util.hpp"
 #include "wrap_eigen.hpp"
 #include <string>
 #include <vector>
 #include <set>
 
-// Clients of Model never really need to worry about what exactly lies
-// behind TAO, they can treat this as an opaque pointer type.
-class taoDNode;
 
 namespace minitao {
   
   
-  // declared in <minitao/tao_util.hpp>
-  struct tao_tree_info_s;
-  
   class Model
   {
   public:
-    Model(/** TAO tree info used for computing kinematics, the gravity
+    Model(/** TAO tree used for computing kinematics, the gravity
 	      torque vector, the mass-inertia matrix, and its
 	      inverse. */
-	  tao_tree_info_s * kgm_tree,
-	  /** Optional TAO tree info for computing Coriolis and
+	  taoDNode * kgm_root,
+	  /** Optional TAO tree for computing Coriolis and
 	      centrifugal torques. If you set this to NULL, then the
 	      Coriolis and centrifugal forces won't be computed. */
-	  tao_tree_info_s * cc_tree);
+	  taoDNode * cc_root);
     
     ~Model();
     
@@ -74,7 +69,12 @@ namespace minitao {
 	the state update from the computation of the various
 	quantities in order to efficiently use the TAO tree
 	representation, which forces us to distribute the state over
-	its nodes before computing the model. */
+	its nodes before computing the model.
+	
+	\pre The NDOF of the state has to match the NDOF of the
+	model. No check is performed in this method, it can crash your
+	program if you're not careful.
+    */
     void setState(State const & state);
     
     /** Retrieve the state passed to setState() (or update(), for that
@@ -105,44 +105,16 @@ namespace minitao {
 	else than getNJoints(). */
     size_t getNDOF() const;
     
-    /** Retrieve the name of a node. Returns an empty string in case
-	the id is invalid. Use getNNodes() to find out how many nodes
-	there are. */
-    std::string getNodeName(size_t id) const;
-    
-    /** Retrieve the name of a joint. Returns an empty string in case
-	the id is invalid. Use getNJoints() to find out how many
-	joints there are.
+    /** Deprecated TAO node access method which ends up doing a linear
+	(order NDOF) search over the KGM tree.
 	
-	\todo A joint can have any number of DOF, which means there
-	should be a way to get at them individually, but currently we
-	only support exactly one 1-DOF joints per node. */
-    std::string getJointName(size_t id) const;
-    
-    /** Retrieve a node by ID. */
-    taoDNode * getNode(size_t id) const;
-    
-    /** Retrieve a node by its name or registered alias. A typical
-	alias would be "end-effector" or "End_Effector" or so, which
-	might correspond to "right-gripper" or so depending on the
-	robot. */
-    taoDNode * getNodeByName(std::string const & name_or_alias) const;
-    
-    /** Retrieve a node by a joint name or registered alias. This will
-	find and retrieve the node to which the joint is attached (see
-	also getNodeByName()), which allows you to retrieve the
-	taoJoint instance itself. Note that a taoDNode can have any
-	number of joints, so you might have to search through them to
-	find the exact one you're looking for. */
-    taoDNode * getNodeByJointName(std::string const & name_or_alias) const;
-    
-    /** Retrieve joint limit information. This method fills the
-	provided vectors with the lower and upper joint limits. In
-	case no joint limit information is available, it sets the
-	lower limit to \c std::numeric_limits<double>::min() and the
-	upper limit to \c std::numeric_limits<double>::max(). */
-    void getJointLimits(std::vector<double> & joint_limits_lower,
-			std::vector<double> & joint_limits_upper) const;
+	\note TAO node IDs are not a particularly good method of
+	indexing branches of your robot...
+	
+	\return The first node that matches the ID, or NULL if the id
+	was not found in the KGM tree.
+    */
+    taoDNode * findNodeByID(int id) const;
     
     //////////////////////////////////////////////////
     // kinematic facet
@@ -256,14 +228,14 @@ namespace minitao {
     bool getGravity(Vector & gravity) const;
     
     /** Compute the Coriolis and contrifugal joint-torque vector. If
-	you set cc_tree=NULL in the constructor, then this is a
+	you set cc_root=NULL in the constructor, then this is a
 	no-op. */
     void computeCoriolisCentrifugal();
     
     /** Retrieve the Coriolis and contrifugal joint-torque vector.
 	
 	\return True on success. There are two possibility of
-	receiving false: (i) you set cc_tree=NULL in the constructor,
+	receiving false: (i) you set cc_root=NULL in the constructor,
 	or (ii) you never called computeCoriolisCentrifugal(), which
 	gets called by updateDynamics(), which gets called by
 	update(). */
@@ -294,21 +266,26 @@ namespace minitao {
     
     /** For debugging only, access to the
 	kinematics-gravity-mass-inertia tree. */
-    tao_tree_info_s * _getKGMTree() { return kgm_tree_; }
+    taoDNode * _getKGMRoot() { return kgm_root_; }
     
     /** For debugging only, access to the optional
-	Coriolis-centrifugal tree. Can NULL if the user is not
+	Coriolis-centrifugal tree. Can be NULL if the user is not
 	interested in Coriolis-centrifugal effects. */
-    tao_tree_info_s * _getCCTree() { return cc_tree_; }
+    taoDNode * _getCCRoot() { return cc_root_; }
     
     
   private:
     typedef std::set<size_t> dof_set_t;
     dof_set_t gravity_disabled_;
     
-    std::size_t const ndof_;
-    tao_tree_info_s * kgm_tree_;
-    tao_tree_info_s * cc_tree_;
+    std::size_t ndof_;
+    taoDNode * kgm_root_;
+    nodeVector_t kgm_nodes_;
+    jointVector_t kgm_joints_;
+    
+    taoDNode * cc_root_;
+    nodeVector_t cc_nodes_;
+    jointVector_t cc_joints_;
     
     State state_;
     std::vector<double> g_torque_;

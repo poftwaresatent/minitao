@@ -32,43 +32,17 @@
 #include <map>
 
 
-class taoNodeRoot;
 class taoDNode;
+class taoJoint;
 
 
 namespace minitao {
-
-  /**
-     \note TAO supports multiple joints per link, but all use cases so
-     far seem to require that exactly one joint sits between two
-     links, so we treat joint names just as link names until further
-     notice.
-  */
-  struct tao_node_info_s {
-    tao_node_info_s();
-    tao_node_info_s(taoDNode * node, std::string const & link_name,
-		    std::string joint_name, double limit_lower, double limit_upper);
-    tao_node_info_s(tao_node_info_s const & orig);
-    
-    int id;
-    taoDNode * node;
-    std::string link_name;
-    std::string joint_name;
-    double limit_lower;
-    double limit_upper;
-  };
   
-  
-  struct tao_tree_info_s {
-    /** deletes the taoNodeRoot. */
-    virtual ~tao_tree_info_s();
-    taoNodeRoot * root;
-    typedef std::vector<tao_node_info_s> node_info_t;
-    node_info_t info;
-  };
-
   
   typedef std::map<int, taoDNode *> idToNodeMap_t;
+  typedef std::vector<taoDNode *> nodeVector_t;
+  typedef std::vector<taoJoint *> jointVector_t;
+  
   
   /**
      Create a map between tao nodes and IDs. The \c idToNodeMap is not
@@ -83,11 +57,39 @@ namespace minitao {
   
   
   /**
+     Append all nodes of a tree to a vector.  The vector is not
+     cleared for you, thus you could use this function to append to an
+     existing vector of nodes. The enumeration does NOT include the
+     node passed as argument (because usually you will call this on
+     the TAO root node in order to enumerate the degrees of freedom of
+     an entire robot, in which case you do not count the root itself).
+     
+     \note This function skips the root pointer that is passed as
+     argument.
+  */
+  void enumerateNodes(nodeVector_t & nodeVector,
+		      taoDNode * root);
+  
+  
+  /**
+     Append all joints of a tree to a vector. The vector is not
+     cleared for you, thus you could use this function to append to an
+     existing vector of joints.
+  */
+  void enumerateJoints(jointVector_t & jointVector,
+		       taoDNode * root);
+  
+  
+  /**
      Count the total number of links connected to the given node,
      following all children in to the leaf nodes. This number does NOT
-     include the given link (because usually you will call this on the
-     TAO root node in order to figure out how many degrees of freedom
-     the robot has, in which case you do not count the root itself).
+     include the node passed as argument (because usually you will
+     call this on the TAO root node in order to figure out how many
+     degrees of freedom the robot has, in which case you do not count
+     the root itself).
+     
+     \note This function skips the root pointer that is passed as
+     argument.
   */
   int countNumberOfLinks(taoDNode * root);
   

@@ -168,14 +168,10 @@ namespace minitao {
     minitao::Model * create_puma_model() throw(runtime_error)
     {
       BranchingRepresentation * kg_brep(create_puma_brep());
-      minitao::tao_tree_info_s * kg_tree(kg_brep->createTreeInfo());
-      delete kg_brep;
-      
       BranchingRepresentation * cc_brep(create_puma_brep());
-      minitao::tao_tree_info_s * cc_tree(cc_brep->createTreeInfo());
+      minitao::Model * model(new minitao::Model(kg_brep->rootNode(), cc_brep->rootNode()));
+      delete kg_brep;
       delete cc_brep;
-      
-      minitao::Model * model(new minitao::Model(kg_tree, cc_tree));
       return model;
     }
     
@@ -237,14 +233,10 @@ namespace minitao {
     minitao::Model * create_unit_mass_RR_model() throw(runtime_error)
     {
       BranchingRepresentation * kg_brep(create_unit_mass_RR_brep());
-      minitao::tao_tree_info_s * kg_tree(kg_brep->createTreeInfo());
-      delete kg_brep;
-      
       BranchingRepresentation * cc_brep(create_unit_mass_RR_brep());
-      minitao::tao_tree_info_s * cc_tree(cc_brep->createTreeInfo());
+      minitao::Model * model(new minitao::Model(kg_brep->rootNode(), cc_brep->rootNode()));
+      delete kg_brep;
       delete cc_brep;
-      
-      minitao::Model * model(new minitao::Model(kg_tree, cc_tree));
       return model;
     }
     
@@ -336,14 +328,10 @@ namespace minitao {
     minitao::Model * create_unit_mass_5R_model() throw(runtime_error)
     {
       BranchingRepresentation * kg_brep(create_unit_mass_5R_brep());
-      minitao::tao_tree_info_s * kg_tree(kg_brep->createTreeInfo());
-      delete kg_brep;
-      
       BranchingRepresentation * cc_brep(create_unit_mass_5R_brep());
-      minitao::tao_tree_info_s * cc_tree(cc_brep->createTreeInfo());
+      minitao::Model * model(new minitao::Model(kg_brep->rootNode(), cc_brep->rootNode()));
+      delete kg_brep;
       delete cc_brep;
-      
-      minitao::Model * model(new minitao::Model(kg_tree, cc_tree));
       return model;
     }
 
@@ -405,14 +393,10 @@ namespace minitao {
     minitao::Model * create_unit_inertia_RR_model() throw(runtime_error)
     {
       BranchingRepresentation * kg_brep(create_unit_inertia_RR_brep());
-      minitao::tao_tree_info_s * kg_tree(kg_brep->createTreeInfo());
-      delete kg_brep;
-      
       BranchingRepresentation * cc_brep(create_unit_inertia_RR_brep());
-      minitao::tao_tree_info_s * cc_tree(cc_brep->createTreeInfo());
+      minitao::Model * model(new minitao::Model(kg_brep->rootNode(), cc_brep->rootNode()));
+      delete kg_brep;
       delete cc_brep;
-      
-      minitao::Model * model(new minitao::Model(kg_tree, cc_tree));
       return model;
     }
 
@@ -474,14 +458,10 @@ namespace minitao {
     minitao::Model * create_unit_mass_RP_model() throw(runtime_error)
     {
       BranchingRepresentation * kg_brep(create_unit_mass_RP_brep());
-      minitao::tao_tree_info_s * kg_tree(kg_brep->createTreeInfo());
-      delete kg_brep;
-      
       BranchingRepresentation * cc_brep(create_unit_mass_RP_brep());
-      minitao::tao_tree_info_s * cc_tree(cc_brep->createTreeInfo());
+      minitao::Model * model(new minitao::Model(kg_brep->rootNode(), cc_brep->rootNode()));
+      delete kg_brep;
       delete cc_brep;
-      
-      minitao::Model * model(new minitao::Model(kg_tree, cc_tree));
       return model;
     }
 

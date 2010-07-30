@@ -62,20 +62,26 @@ namespace minitao {
   
   
   Model::
-  Model(tao_tree_info_s * kgm_tree,
-	tao_tree_info_s * cc_tree)
-    : ndof_(kgm_tree->info.size()), // XXXX only works for one joint per node and one DOF per joint
-      kgm_tree_(kgm_tree),
-      cc_tree_(cc_tree)
+  Model(taoDNode * kgm_root,
+	taoDNode * cc_root)
+    : kgm_root_(kgm_root),
+      cc_root_(cc_root)
   {
+    enumerateNodes(kgm_nodes_, kgm_root);
+    enumerateJoints(kgm_joints_, kgm_root);
+    ndof_ = kgm_joints_.size();
+    if (cc_root) {
+      enumerateNodes(cc_nodes_, cc_root);
+      enumerateJoints(cc_joints_, cc_root);
+    }
   }
 
 
   Model::
   ~Model()
   {
-    delete kgm_tree_;
-    delete cc_tree_;
+    delete kgm_root_;
+    delete cc_root_;
   }
   
   
@@ -92,18 +98,21 @@ namespace minitao {
   setState(State const & state)
   {
     state_ = state;
-    for (size_t ii(0); ii < ndof_; ++ii) {
-      taoJoint * joint(kgm_tree_->info[ii].node->getJointList());
-      joint->setQ(&state.position_[ii]);
+    double const * pos(&state.position_[0]);
+    for (size_t ii(0); ii < ndof_; ++ii, ++pos) {
+      taoJoint * joint(kgm_joints_[ii]);
+      joint->setQ(pos);
       joint->zeroDQ();
       joint->zeroDDQ();
       joint->zeroTau();
     }
-    if (cc_tree_) {
-      for (size_t ii(0); ii < ndof_; ++ii) {
-	taoJoint * joint(cc_tree_->info[ii].node->getJointList());
-	joint->setQ(&state.position_[ii]);
-	joint->setDQ(&state.velocity_[ii]);
+    if (cc_root_) {
+      pos = &state.position_[0];
+      double const * vel(&state.velocity_[0]);
+      for (size_t ii(0); ii < ndof_; ++ii, ++pos, ++vel) {
+	taoJoint * joint(cc_joints_[ii]);
+	joint->setQ(pos);
+	joint->setDQ(vel);
 	joint->zeroDDQ();
 	joint->zeroTau();
       }
@@ -134,80 +143,11 @@ namespace minitao {
   }
   
   
-  std::string Model::
-  getNodeName(size_t id) const
-  {
-    std::string name("");
-    if (ndof_ > id) {
-      name = kgm_tree_->info[id].link_name;
-    }
-    return name;
-  }
-  
-  
-  std::string Model::
-  getJointName(size_t id) const
-  {
-    std::string name("");
-    if (ndof_ > id) {
-      name = kgm_tree_->info[id].joint_name;
-    }
-    return name;
-  }
-  
-  
-  taoDNode * Model::
-  getNode(size_t id) const
-  {
-    if (ndof_ > id) {
-      return kgm_tree_->info[id].node;
-    }
-    return 0;
-  }
-  
-  
-  taoDNode * Model::
-  getNodeByName(std::string const & name_or_alias) const
-  {
-    for (size_t ii(0); ii < ndof_; ++ii) {
-      if (name_or_alias == kgm_tree_->info[ii].link_name) {
-	return  kgm_tree_->info[ii].node;
-      }
-    }
-    return 0;
-  }
-  
-  
-  taoDNode * Model::
-  getNodeByJointName(std::string const & name_or_alias) const
-  {
-    for (size_t ii(0); ii < ndof_; ++ii) {
-      if (name_or_alias == kgm_tree_->info[ii].joint_name) {
-	return  kgm_tree_->info[ii].node;
-      }
-    }
-    return 0;
-  }
-  
-  
-  void Model::
-  getJointLimits(std::vector<double> & joint_limits_lower,
-		 std::vector<double> & joint_limits_upper) const
-  {
-    joint_limits_lower.resize(ndof_);
-    joint_limits_upper.resize(ndof_);
-    for (size_t ii(0); ii < ndof_; ++ii) {
-      joint_limits_lower[ii] = kgm_tree_->info[ii].limit_lower;
-      joint_limits_upper[ii] = kgm_tree_->info[ii].limit_upper;
-    }
-  }
-  
-  
   void Model::
   updateKinematics()
   {
-    taoDynamics::updateTransformation(kgm_tree_->root);
-    taoDynamics::globalJacobian(kgm_tree_->root);
+    taoDynamics::updateTransformation(kgm_root_);
+    taoDynamics::globalJacobian(kgm_root_);
   }
   
   
@@ -223,7 +163,6 @@ namespace minitao {
     deQuaternion const & tao_quat(tao_frame->rotation());
     deVector3 const & tao_trans(tao_frame->translation());
     
-#warning "TO DO: maybe the other way around..."
     // beware: Eigen::Quaternion(w, x, y, z) puts w first, whereas
     // deQuaternion(qx, qy, qz, qw) puts w last. Of course.
     global_transform = Translation(tao_trans[0], tao_trans[1], tao_trans[2]);
@@ -298,7 +237,7 @@ namespace minitao {
     for (size_t icol(0); icol < ndof_; ++icol) {
       deVector6 Jg_col;	// in NDOF case, this will become an array of deVector6...
       // in NOJ case, we will have to loop over all joints of a node...
-      kgm_tree_->info[icol].node->getJointList()->getJgColumns(&Jg_col);
+      kgm_joints_[icol]->getJgColumns(&Jg_col);
       
 #ifdef DEBUG
       fprintf(stderr, "iJg[%zu]: [ % 4.2f % 4.2f % 4.2f % 4.2f % 4.2f % 4.2f]\n",
@@ -348,10 +287,11 @@ namespace minitao {
   computeGravity()
   {
     g_torque_.resize(ndof_);
-    taoDynamics::invDynamics(kgm_tree_->root, &earth_gravity);
+    taoDynamics::invDynamics(kgm_root_, &earth_gravity);
     for (size_t ii(0); ii < ndof_; ++ii) {
-      taoJoint * joint(kgm_tree_->info[ii].node->getJointList());
-      joint->getTau(&g_torque_[ii]);
+      // If we have a joint with more than one NDOF this is probably
+      // going to blow up or do the wrong thing.
+      kgm_joints_[ii]->getTau(&g_torque_[ii]);
     }
   }
   
@@ -402,12 +342,13 @@ namespace minitao {
   void Model::
   computeCoriolisCentrifugal()
   {
-    if (cc_tree_) {
+    if (cc_root_) {
       cc_torque_.resize(ndof_);
-      taoDynamics::invDynamics(cc_tree_->root, &zero_gravity);
+      taoDynamics::invDynamics(cc_root_, &zero_gravity);
       for (size_t ii(0); ii < ndof_; ++ii) {
-	taoJoint * joint(cc_tree_->info[ii].node->getJointList());
-	joint->getTau(&cc_torque_[ii]);
+	// If we have a joint with more than one NDOF this is probably
+	// going to blow up or do the wrong thing.
+	cc_joints_[ii]->getTau(&cc_torque_[ii]);
       }
     }
   }
@@ -416,7 +357,7 @@ namespace minitao {
   bool Model::
   getCoriolisCentrifugal(Vector & coriolis_centrifugal) const
   {
-    if ( ! cc_tree_) {
+    if ( ! cc_root_) {
       return false;
     }
     if (cc_torque_.empty()) {
@@ -439,16 +380,16 @@ namespace minitao {
     
     deFloat const one(1);
     for (size_t irow(0); irow < ndof_; ++irow) {
-      taoJoint * joint(kgm_tree_->info[irow].node->getJointList());
+      taoJoint * joint(kgm_joints_[irow]);
       
       // Compute one column of A by solving inverse dynamics of the
       // corresponding joint having a unit acceleration, while all the
-      // others remain fixed. This works on the kgm_tree because it
+      // others remain fixed. This works on the KGM tree because it
       // has zero speeds, thus the Coriolis-centrifgual effects are
       // zero, and by using zero gravity we get pure system dynamics:
       // force = mass * acceleration (in matrix form).
       joint->setDDQ(&one);
-      taoDynamics::invDynamics(kgm_tree_->root, &zero_gravity);
+      taoDynamics::invDynamics(kgm_root_, &zero_gravity);
       joint->zeroDDQ();
       
       // Retrieve the column of A by reading the joint torques
@@ -456,15 +397,13 @@ namespace minitao {
       // flattened upper triangular matrix).
       
       for (size_t icol(0); icol <= irow; ++icol) {
-	joint = kgm_tree_->info[icol].node->getJointList();
-	joint->getTau(&a_upper_triangular_[squareToTriangularIndex(irow, icol, ndof_)]);
+	kgm_joints_[icol]->getTau(&a_upper_triangular_[squareToTriangularIndex(irow, icol, ndof_)]);
       }
     }
     
     // Reset all the torques.
     for (size_t ii(0); ii < ndof_; ++ii) {
-      taoJoint * joint(kgm_tree_->info[ii].node->getJointList());
-      joint->zeroTau();
+      kgm_joints_[ii]->zeroTau();
     }
   }
   
@@ -499,31 +438,29 @@ namespace minitao {
     
     deFloat const one(1);
     for (size_t irow(0); irow < ndof_; ++irow) {
-      taoJoint * joint(kgm_tree_->info[irow].node->getJointList());
+      taoJoint * joint(kgm_joints_[irow]);
       
       // Compute one column of Ainv by solving forward dynamics of the
       // corresponding joint having a unit torque, while all the
-      // others remain unactuated. This works on the kgm_tree because
+      // others remain unactuated. This works on the KGM tree because
       // it has zero speeds, thus the Coriolis-centrifgual effects are
       // zero, and by using zero gravity we get pure system dynamics:
       // acceleration = mass_inv * force (in matrix form).
       joint->setTau(&one);
-      taoDynamics::fwdDynamics(kgm_tree_->root, &zero_gravity);
+      taoDynamics::fwdDynamics(kgm_root_, &zero_gravity);
       joint->zeroTau();
       
       // Retrieve the column of Ainv by reading the joint
       // accelerations generated by the column-selecting unit torque
       // (into a flattened upper triangular matrix).
       for (size_t icol(0); icol <= irow; ++icol) {
-	joint = kgm_tree_->info[icol].node->getJointList();
-	joint->getDDQ(&ainv_upper_triangular_[squareToTriangularIndex(irow, icol, ndof_)]);
+	kgm_joints_[icol]->getDDQ(&ainv_upper_triangular_[squareToTriangularIndex(irow, icol, ndof_)]);
       }
     }
     
     // Reset all the accelerations.
     for (size_t ii(0); ii < ndof_; ++ii) {
-      taoJoint * joint(kgm_tree_->info[ii].node->getJointList());
-      joint->zeroDDQ();
+      kgm_joints_[ii]->zeroDDQ();
     }
   }
   
@@ -546,6 +483,18 @@ namespace minitao {
     }
     
     return true;
+  }
+  
+  
+  taoDNode * Model::
+  findNodeByID(int id) const
+  {
+    for (nodeVector_t::const_iterator in(kgm_nodes_.begin()); in != kgm_nodes_.end(); ++in) {
+      if (id == (*in)->getID()) {
+	return *in;
+      }
+    }
+    return 0;
   }
 
 }

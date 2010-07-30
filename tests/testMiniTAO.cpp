@@ -86,38 +86,6 @@ TEST (jspaceModel, branching)
     EXPECT_EQ (model->getNNodes(), 6) << "Puma should have 6 nodes";
     EXPECT_EQ (model->getNJoints(), 6) << "Puma should have 6 joints";
     EXPECT_EQ (model->getNDOF(), 6) << "Puma should have 6 DOF";
-    char const * node_name[] = {
-      "base",
-      "upper_arm",
-      "lower_arm",
-      "wrist-hand",
-      "wrist-finger",
-      "end-effector"
-    };
-    char const * joint_name[] = {
-      "shoulder-yaw",
-      "shoulder-pitch",
-      "elbow",
-      "wrist-roll1",
-      "wrist-pitch",
-      "wrist-roll2"
-    };
-    for (int ii(0); ii < 6; ++ii) {
-      EXPECT_NE ((void*)0, model->getNode(ii))
-	<< "Could not get node " << ii;
-      EXPECT_NE ((void*)0, model->getNodeByName(node_name[ii]))
-	<< "Could not get node by name \"" << node_name[ii] << "\"";
-      if (model->getNodeByName(node_name[ii])) {
-	EXPECT_EQ (ii, model->getNodeByName(node_name[ii])->getID())
-	  << "Node with name \"" << node_name[ii] << "\" should have ID " << ii;
-      }
-      EXPECT_NE ((void*)0, model->getNodeByJointName(joint_name[ii]))
-	<< "Could not get node by joint name \"" << joint_name[ii] << "\"";
-      if (model->getNodeByJointName(joint_name[ii])) {
-	EXPECT_EQ (ii, model->getNodeByJointName(joint_name[ii])->getID())
-	  << "Node with joint name \"" << joint_name[ii] << "\" should have ID " << ii;
-      }
-    }
   }
   catch (std::exception const & ee) {
     ADD_FAILURE () << "exception " << ee.what();
@@ -194,7 +162,7 @@ TEST (jspaceModel, kinematics)
       }
       
       minitao::Transform transform;
-      if ( ! model->getGlobalFrame(model->getNode(id), transform)) {
+      if ( ! model->getGlobalFrame(model->findNodeByID(id), transform)) {
 	FAIL() << frames_filename << ": line " << line_count << ": could not get global frame " << id << " from model";
       }
       minitao::Quaternion quat_computed(transform.rotation());
@@ -416,7 +384,7 @@ TEST (jspaceModel, Jacobian_R)
   minitao::Model * model(0);
   try {
     model = create_unit_mass_RR_model();
-    taoDNode * ee(model->getNode(0));
+    taoDNode * ee(model->findNodeByID(0));
     ASSERT_NE ((void*)0, ee) << "no end effector (node ID 0)";
     minitao::State state(2, 2, 0); // here we're only gonna test the first joint though
     minitao::zero(state.position_);
@@ -477,7 +445,7 @@ TEST (jspaceModel, Jacobian_RR)
   minitao::Model * model(0);
   try {
     model = create_unit_mass_RR_model();
-    taoDNode * ee(model->getNode(1));
+    taoDNode * ee(model->findNodeByID(1));
     ASSERT_NE ((void*)0, ee) << "no end effector (node ID 1)";
     minitao::State state(2, 2, 0);
     minitao::zero(state.velocity_);
@@ -543,7 +511,7 @@ TEST (jspaceModel, Jacobian_RP)
   minitao::Model * model(0);
   try {
     model = create_unit_mass_RP_model();
-    taoDNode * ee(model->getNode(1));
+    taoDNode * ee(model->findNodeByID(1));
     ASSERT_NE ((void*)0, ee) << "no end effector (node ID 1)";
     minitao::State state(2, 2, 0);
     minitao::zero(state.velocity_);
@@ -647,8 +615,8 @@ TEST (jspaceModel, mass_inertia_RR)
     minitao::Model * model(0);
     try {
       model = create_model[test_index]();
-      taoDNode * n1(model->getNode(0));
-      taoDNode * n2(model->getNode(1));
+      taoDNode * n1(model->findNodeByID(0));
+      taoDNode * n2(model->findNodeByID(1));
       ASSERT_NE ((void*)0, n1);
       ASSERT_NE ((void*)0, n2);
       minitao::State state(2, 2, 0);
@@ -736,8 +704,8 @@ TEST (jspaceModel, mass_inertia_RP)
   minitao::Model * model(0);
   try {
     model = create_unit_mass_RP_model();
-    taoDNode * n1(model->getNode(0));
-    taoDNode * n2(model->getNode(1));
+    taoDNode * n1(model->findNodeByID(0));
+    taoDNode * n2(model->findNodeByID(1));
     ASSERT_NE ((void*)0, n1);
     ASSERT_NE ((void*)0, n2);
     minitao::State state(2, 2, 0);

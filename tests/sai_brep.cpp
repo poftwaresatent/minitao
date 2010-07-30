@@ -39,10 +39,10 @@ namespace minitao {
     }
 
 
-    /** \todo how about deleting rootNode_ and tons of other stuff? */
     BranchingRepresentation::
     ~BranchingRepresentation()
     {
+      // Do NOT delete rootNode_ because others might still be using it.
     }
 
 
@@ -57,57 +57,5 @@ namespace minitao {
       return foundNode;
     }
     
-    
-    minitao::tao_tree_info_s * BranchingRepresentation::
-    createTreeInfo()
-    {
-      minitao::tao_tree_info_s * tree(new minitao::tao_tree_info_s());
-      tree->root = rootNode_;
-    
-      typedef idToNodeMap_t foo_t;
-      foo_t const & foo(idToNodeMap_);
-      int maxid(0);
-      for (foo_t::const_iterator ifoo(foo.begin()); ifoo != foo.end(); ++ifoo) {
-	if (ifoo->first > maxid) {
-	  maxid = ifoo->first;
-	}
-      }
-      tree->info.resize(maxid+1);
-    
-      typedef std::map<std::string, taoDNode*> bar_t;
-      bar_t const & link_bar(linkNameToNodeMap_);
-      bar_t const & joint_bar(jointNameToNodeMap_);
-      minitao::Vector const & upper(upperJointLimitVec_);
-      minitao::Vector const & lower(lowerJointLimitVec_);
-    
-      for (foo_t::const_iterator ifoo(foo.begin()); ifoo != foo.end(); ++ifoo) {
-	if (ifoo->first >= 0) {
-	
-	  tree->info[ifoo->first].id = ifoo->first;
-	  tree->info[ifoo->first].node = ifoo->second;
-	
-	  tree->info[ifoo->first].link_name = "(not found)";
-	  for (bar_t::const_iterator ibar(link_bar.begin()); ibar != link_bar.end(); ++ibar) {
-	    if (ifoo->second == ibar->second) {
-	      tree->info[ifoo->first].link_name = ibar->first;
-	      break;
-	    }
-	  }
-	
-	  tree->info[ifoo->first].joint_name = "(not found)";
-	  for (bar_t::const_iterator ibar(joint_bar.begin()); ibar != joint_bar.end(); ++ibar) {
-	    if (ifoo->second == ibar->second) {
-	      tree->info[ifoo->first].joint_name = ibar->first;
-	      break;
-	    }
-	  }
-	
-	  tree->info[ifoo->first].limit_lower = lower[ifoo->first];
-	  tree->info[ifoo->first].limit_upper = upper[ifoo->first];
-	}
-      }
-      return tree;
-    }
-
   }
 }
