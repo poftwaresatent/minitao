@@ -13,6 +13,17 @@ include_directories (tao)
 include (CheckIncludeFileCXX)
 
 ##################################################
+# turn on coverage, if desired
+#
+# to switch it on, run cmake with -DCOVERAGE=True
+
+if (COVERAGE)
+  add_definitions (-fprofile-arcs)
+  add_definitions (-ftest-coverage)
+  set (MAYBE_GCOV gcov)
+endif (COVERAGE)
+
+##################################################
 # find Google Testing Framework
 
 if (NOT GTEST_DIR)
@@ -101,14 +112,6 @@ add_library (
   tao/tao/utility/TaoDeMassProp.cpp
   tao/tao/utility/TaoDeLogger.cpp)
 target_link_libraries (minitao ${MAYBE_GCOV})
-
-##################################################
-# tests and utilities
-
-if (HAVE_GTEST)
-  add_executable (testTAO tao/tests/testTAO.cpp)
-  target_link_libraries (testTAO minitao gtest ${MAYBE_GCOV})
-endif (HAVE_GTEST)
 
 ##################################################
 # installation targets
