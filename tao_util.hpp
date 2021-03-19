@@ -26,7 +26,6 @@
 #ifndef MINITAO_TAO_UTIL_H
 #define MINITAO_TAO_UTIL_H
 
-#include <stdexcept>
 #include <string>
 #include <vector>
 #include <map>
@@ -52,8 +51,7 @@ namespace minitao {
      \note Throws a \c runtime_error in case there is a duplicate ID
   */
   void mapNodesToIDs(idToNodeMap_t & idToNodeMap,
-		     taoDNode * node)
-    throw(std::runtime_error);
+		     taoDNode * node);
   
   
   /**

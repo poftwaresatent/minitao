@@ -29,7 +29,7 @@
 #include <Eigen/Geometry>
 
 namespace minitao {
-  typedef Eigen::Transform3d Transform;
+  typedef Eigen::Affine3d Transform;
   typedef Eigen::Translation3d Translation;
   typedef Eigen::Quaternion<double> Quaternion;
   typedef Eigen::VectorXd Vector;

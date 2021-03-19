@@ -28,7 +28,6 @@
 
 #include <tao/matrix/TaoDeMath.h>
 #include <map>
-#include <stdexcept>
 
 namespace tixml261 {
   class TiXmlElement;
@@ -46,7 +45,7 @@ namespace minitao {
     class BRParser
     {
     public:
-      BranchingRepresentation * parse(std::string const & fileName) throw(std::runtime_error);
+      BranchingRepresentation * parse(std::string const & fileName);
       
     private:
       /** The thing we're creating while parsing the XML file. */
@@ -77,13 +76,13 @@ namespace minitao {
       // std::map<std::string, double> linkToSurfaceDepth_;
       
       /** Depth First Search on joint nodes. */
-      void DFS_JointNodes(tixml261::TiXmlElement *, int) throw(std::runtime_error);
+      void DFS_JointNodes(tixml261::TiXmlElement *, int);
     
       /** Search for child xml joint node. */
       tixml261::TiXmlElement * getChildJointNode(tixml261::TiXmlElement *);
       
       /** Read data xml joint nodes. */
-      void exploreJointNode(tixml261::TiXmlElement *) throw(std::runtime_error);
+      void exploreJointNode(tixml261::TiXmlElement *);
     
       /** Searches for the base node and creates a branching robot using DFS algorithm. */
       void exploreRobot(tixml261::TiXmlElement *);

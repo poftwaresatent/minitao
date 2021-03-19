@@ -28,13 +28,16 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#include <stdexcept>
 
 using namespace std;
 
 namespace minitao {
   namespace test {
     
-    std::string create_tmpfile(char const * fname_template, char const * contents) throw(runtime_error)
+    std::string create_tmpfile(char const * fname_template, char const * contents)
     {
       if (strlen(fname_template) >= 64) {
 	throw runtime_error("create_tmpfile(): fname_template is too long (max 63 characters)");

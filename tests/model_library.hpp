@@ -24,19 +24,18 @@
 */
 
 #include "Model.hpp"
-#include <stdexcept>
 
 namespace minitao {
   namespace test {
     
     class BranchingRepresentation;
     
-    minitao::Model * create_puma_model() throw(std::runtime_error);
-    minitao::Model * create_unit_mass_RR_model() throw(std::runtime_error);
-    BranchingRepresentation * create_unit_mass_5R_brep() throw(std::runtime_error);
-    minitao::Model * create_unit_mass_5R_model() throw(std::runtime_error);
-    minitao::Model * create_unit_inertia_RR_model() throw(std::runtime_error);
-    minitao::Model * create_unit_mass_RP_model() throw(std::runtime_error);
+    minitao::Model * create_puma_model();
+    minitao::Model * create_unit_mass_RR_model();
+    BranchingRepresentation * create_unit_mass_5R_brep();
+    minitao::Model * create_unit_mass_5R_model();
+    minitao::Model * create_unit_inertia_RR_model();
+    minitao::Model * create_unit_mass_RP_model();
 
   }
 }

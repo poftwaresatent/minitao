@@ -40,10 +40,10 @@ if (HAVE_GTEST)
   target_link_libraries (minitao_tests minitao tixml261 ${MAYBE_GCOV})
   
   add_executable (testTAO testTAO.cpp)
-  target_link_libraries (testTAO minitao gtest ${MAYBE_GCOV})
+  target_link_libraries (testTAO minitao gtest ${MAYBE_GCOV} -lpthread)
   
   add_executable (testMiniTAO testMiniTAO.cpp)
-  target_link_libraries (testMiniTAO minitao_tests gtest ${MAYBE_GCOV})
+  target_link_libraries (testMiniTAO minitao_tests gtest ${MAYBE_GCOV} -lpthread)
 
 else (HAVE_GTEST)
 

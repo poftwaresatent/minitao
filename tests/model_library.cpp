@@ -31,12 +31,14 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <stdexcept>
+
 
 using namespace minitao::test;
 using namespace std;
 
 
-static std::string create_puma_xml() throw(runtime_error)
+static std::string create_puma_xml()
 {
   static char const * xml = 
     "<?xml version=\"1.0\" ?>\n"
@@ -151,7 +153,7 @@ static std::string create_puma_xml() throw(runtime_error)
 }
 
 
-static BranchingRepresentation * create_puma_brep() throw(runtime_error)
+static BranchingRepresentation * create_puma_brep()
 {
   static string xml_filename("");
   if (xml_filename.empty()) {
@@ -165,7 +167,7 @@ static BranchingRepresentation * create_puma_brep() throw(runtime_error)
 namespace minitao {
   namespace test {
     
-    minitao::Model * create_puma_model() throw(runtime_error)
+    minitao::Model * create_puma_model()
     {
       BranchingRepresentation * kg_brep(create_puma_brep());
       BranchingRepresentation * cc_brep(create_puma_brep());
@@ -179,7 +181,7 @@ namespace minitao {
 }
 
 
-static std::string create_unit_mass_RR_xml() throw(runtime_error)
+static std::string create_unit_mass_RR_xml()
 {
   static char const * xml = 
     "<?xml version=\"1.0\" ?>\n"
@@ -215,7 +217,7 @@ static std::string create_unit_mass_RR_xml() throw(runtime_error)
 }
 
 
-static BranchingRepresentation * create_unit_mass_RR_brep() throw(runtime_error)
+static BranchingRepresentation * create_unit_mass_RR_brep()
 {
   static string xml_filename("");
   if (xml_filename.empty()) {
@@ -230,7 +232,7 @@ static BranchingRepresentation * create_unit_mass_RR_brep() throw(runtime_error)
 namespace minitao {
   namespace test {
     
-    minitao::Model * create_unit_mass_RR_model() throw(runtime_error)
+    minitao::Model * create_unit_mass_RR_model()
     {
       BranchingRepresentation * kg_brep(create_unit_mass_RR_brep());
       BranchingRepresentation * cc_brep(create_unit_mass_RR_brep());
@@ -244,7 +246,7 @@ namespace minitao {
 }
 
 
-static std::string create_unit_mass_5R_xml() throw(runtime_error)
+static std::string create_unit_mass_5R_xml()
 {
   static char const * xml = 
     "<?xml version=\"1.0\" ?>\n"
@@ -313,7 +315,7 @@ static std::string create_unit_mass_5R_xml() throw(runtime_error)
 namespace minitao {
   namespace test {
     
-    BranchingRepresentation * create_unit_mass_5R_brep() throw(runtime_error)
+    BranchingRepresentation * create_unit_mass_5R_brep()
     {
       static string xml_filename("");
       if (xml_filename.empty()) {
@@ -325,7 +327,7 @@ namespace minitao {
     }
     
     
-    minitao::Model * create_unit_mass_5R_model() throw(runtime_error)
+    minitao::Model * create_unit_mass_5R_model()
     {
       BranchingRepresentation * kg_brep(create_unit_mass_5R_brep());
       BranchingRepresentation * cc_brep(create_unit_mass_5R_brep());
@@ -339,7 +341,7 @@ namespace minitao {
 }
 
 
-static std::string create_unit_inertia_RR_xml() throw(runtime_error)
+static std::string create_unit_inertia_RR_xml()
 {
   static char const * xml = 
     "<?xml version=\"1.0\" ?>\n"
@@ -375,7 +377,7 @@ static std::string create_unit_inertia_RR_xml() throw(runtime_error)
 }
 
 
-static BranchingRepresentation * create_unit_inertia_RR_brep() throw(runtime_error)
+static BranchingRepresentation * create_unit_inertia_RR_brep()
 {
   static string xml_filename("");
   if (xml_filename.empty()) {
@@ -390,7 +392,7 @@ static BranchingRepresentation * create_unit_inertia_RR_brep() throw(runtime_err
 namespace minitao {
   namespace test {
     
-    minitao::Model * create_unit_inertia_RR_model() throw(runtime_error)
+    minitao::Model * create_unit_inertia_RR_model()
     {
       BranchingRepresentation * kg_brep(create_unit_inertia_RR_brep());
       BranchingRepresentation * cc_brep(create_unit_inertia_RR_brep());
@@ -404,7 +406,7 @@ namespace minitao {
 }
 
 
-static std::string create_unit_mass_RP_xml() throw(runtime_error)
+static std::string create_unit_mass_RP_xml()
 {
   static char const * xml = 
     "<?xml version=\"1.0\" ?>\n"
@@ -440,7 +442,7 @@ static std::string create_unit_mass_RP_xml() throw(runtime_error)
 }
 
 
-static BranchingRepresentation * create_unit_mass_RP_brep() throw(runtime_error)
+static BranchingRepresentation * create_unit_mass_RP_brep()
 {
   static string xml_filename("");
   if (xml_filename.empty()) {
@@ -455,7 +457,7 @@ static BranchingRepresentation * create_unit_mass_RP_brep() throw(runtime_error)
 namespace minitao {
   namespace test {
     
-    minitao::Model * create_unit_mass_RP_model() throw(runtime_error)
+    minitao::Model * create_unit_mass_RP_model()
     {
       BranchingRepresentation * kg_brep(create_unit_mass_RP_brep());
       BranchingRepresentation * cc_brep(create_unit_mass_RP_brep());

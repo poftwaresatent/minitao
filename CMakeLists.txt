@@ -23,42 +23,42 @@ if (COVERAGE)
 endif (COVERAGE)
 
 ##################################################
-# find Eigen matrix and linear algebra library (version 2.x)
+# find Eigen matrix and linear algebra library
 #
-# NOTE: the eigen2/ prefixing is a quick hack due to CMake
+# NOTE: the eigen3/ prefixing is a quick hack due to CMake
 # quirks. We should actually explicit check for the
-# eigen2/Eigen/Core header, and only then tweak the include
+# eigen3/Eigen/Core header, and only then tweak the include
 # path... but CMake does not seem to tell us where exactly it found
 # a header, so we'd have to jump through some hoops via find_path()
 # or so.
-if (NOT EIGEN2_DIR)
-  set (EIGEN2_DIR $ENV{EIGEN2_DIR})
-endif (NOT EIGEN2_DIR)
-if (NOT EIGEN2_DIR)
+if (NOT EIGEN3_DIR)
+  set (EIGEN3_DIR $ENV{EIGEN3_DIR})
+endif (NOT EIGEN3_DIR)
+if (NOT EIGEN3_DIR)
   # If we are building within busylizzy...
-  set (EIGEN2_DIR ${EIGEN_ROOT_DIR})
-endif (NOT EIGEN2_DIR)
-if (EIGEN2_DIR)
-	message ("using EIGEN2_DIR ${EIGEN2_DIR}")
+  set (EIGEN3_DIR ${EIGEN_ROOT_DIR})
+endif (NOT EIGEN3_DIR)
+if (EIGEN3_DIR)
+	message ("using EIGEN3_DIR ${EIGEN3_DIR}")
   list (APPEND CMAKE_REQUIRED_INCLUDES
-    ${EIGEN2_DIR}/include ${EIGEN2_DIR}
-    ${EIGEN2_DIR}/include/eigen2 ${EIGEN2_DIR}/eigen2)
+    ${EIGEN3_DIR}/include ${EIGEN3_DIR}
+    ${EIGEN3_DIR}/include/eigen3 ${EIGEN3_DIR}/eigen3)
   include_directories (
-    ${EIGEN2_DIR}/include ${EIGEN2_DIR}
-    ${EIGEN2_DIR}/include/eigen2 ${EIGEN2_DIR}/eigen2)
-else (EIGEN2_DIR)
+    ${EIGEN3_DIR}/include ${EIGEN3_DIR}
+    ${EIGEN3_DIR}/include/eigen3 ${EIGEN3_DIR}/eigen3)
+else (EIGEN3_DIR)
   # Add standard install location under Debian (and others) and Macports.
-  # See not on quick hack above.
-  list (APPEND CMAKE_REQUIRED_INCLUDES /usr/include/eigen2 /opt/local/include/eigen2)
-  include_directories (/usr/include/eigen2 /opt/local/include/eigen2)
-endif (EIGEN2_DIR)
+  # See note on quick hack above.
+  list (APPEND CMAKE_REQUIRED_INCLUDES /usr/include/eigen3 /opt/local/include/eigen3)
+  include_directories (/usr/include/eigen3 /opt/local/include/eigen3)
+endif (EIGEN3_DIR)
 ### Would like to check these but CMake seems broken yet again.
-#check_include_file_cxx (Eigen/Core HAVE_EIGEN2)
-#if (${HAVE_EIGEN2})
-#  message ("found eigen2")
-#else (${HAVE_EIGEN2})
-#  message (FATAL_ERROR "eigen2 not found. Please install it e.g. using `sudo apt-get install libeigen2-dev' or from http://eigen.tuxfamily.org/ and tell me where to find it by passing the -DEIGEN2_DIR:path=/path/to/eigen2")
-#endif (${HAVE_EIGEN2})
+#check_include_file_cxx (Eigen/Core HAVE_EIGEN3)
+#if (${HAVE_EIGEN3})
+#  message ("found eigen3")
+#else (${HAVE_EIGEN3})
+#  message (FATAL_ERROR "eigen3 not found. Please install it e.g. using `sudo apt-get install libeigen3-dev' or from http://eigen.tuxfamily.org/ and tell me where to find it by passing the -DEIGEN3_DIR:path=/path/to/eigen3")
+#endif (${HAVE_EIGEN3})
 
 ##################################################
 # the minitao library

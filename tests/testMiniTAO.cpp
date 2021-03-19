@@ -44,7 +44,7 @@
 using namespace std;
 using namespace minitao::test;
 
-static std::string create_puma_frames() throw(runtime_error);
+static std::string create_puma_frames();
 
 
 TEST (jspaceModel, state)
@@ -647,8 +647,7 @@ TEST (jspaceModel, mass_inertia_RR)
 	  
 	  minitao::Matrix MMinv(2, 2);
 	  model->getInverseMassInertia(MMinv);
-	  minitao::Matrix MMinv_check(2, 2);
-	  MM_check.computeInverse(&MMinv_check);
+	  const minitao::Matrix MMinv_check = MM_check.inverse();
 	  {
 	    std::ostringstream msg;
 	    msg << "Checking inv_mass_inertia for test_index " << test_index
@@ -769,7 +768,7 @@ int main(int argc, char ** argv)
 }
 
 
-std::string create_puma_frames() throw(runtime_error)
+std::string create_puma_frames()
 {
   static char const * frames = 
     "==================================================\n"

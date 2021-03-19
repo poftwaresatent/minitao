@@ -28,6 +28,8 @@
 #include <tao/dynamics/tao.h>
 #include <tixml261/tinyxml.h>
 
+#include <stdexcept>
+
 using namespace tixml261;
 using namespace std;
 
@@ -37,7 +39,6 @@ namespace minitao {
     
     BranchingRepresentation * BRParser::
     parse(string const & fileName)
-      throw(std::runtime_error)
     {
       TiXmlDocument doc;
       doc.LoadFile(fileName.c_str());
@@ -108,7 +109,6 @@ namespace minitao {
   
     void BRParser::
     DFS_JointNodes(TiXmlElement * jointNodePtr, int parentNodeID)
-      throw(std::runtime_error)
     {
       // XXXX to do: verify that some minimum amount of values have been
       // set (e.g. ID, linkName, and jointName).
@@ -141,7 +141,6 @@ namespace minitao {
   
     void BRParser::
     exploreJointNode(TiXmlElement * element)
-      throw(std::runtime_error)
     {
       element = element->FirstChildElement();
       string tag = element->Value();

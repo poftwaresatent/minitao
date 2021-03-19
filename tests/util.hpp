@@ -24,12 +24,11 @@
 */
 
 #include "wrap_eigen.hpp"
-#include <stdexcept>
 
 namespace minitao {
   namespace test {
     
-    std::string create_tmpfile(char const * fname_template, char const * contents) throw(std::runtime_error);
+    std::string create_tmpfile(char const * fname_template, char const * contents);
     
     // should also work as-is for minitao::Vector
     bool equal(minitao::Matrix const & lhs, minitao::Matrix const & rhs, double precision);

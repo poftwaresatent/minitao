@@ -29,12 +29,13 @@
 #include <tao/dynamics/taoDNode.h>
 #include <tao/dynamics/taoJoint.h>
 
+#include <stdexcept>
+
 
 namespace minitao {
   
   void mapNodesToIDs(idToNodeMap_t & idToNodeMap,
 		     taoDNode * node)
-    throw(std::runtime_error)
   {
     deInt id = node->getID();
     if (idToNodeMap.find( id ) != idToNodeMap.end())
